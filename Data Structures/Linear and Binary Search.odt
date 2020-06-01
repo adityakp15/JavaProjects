@@ -1,0 +1,157 @@
+//Linear Search
+#include<stdio.h>
+#define size 20
+void input(int a[],int n );
+void print(int a[],int n);
+void linearsearch(int a[],int no,int n);
+void sort(int a[],int n);
+void binarysearch(int a[], int no,int n);
+void main()
+{
+	int a[size];
+	int no;
+    int n;
+	int opt;
+    int op;
+	printf("Enter number you want to search for : ");
+	scanf("%d",&no);
+    printf("Enter the number of elements : ");
+    scanf("%d",&n);
+    printf("Enter contents of the array : \n");
+	input(a,n);
+    printf("\nThe array is : ");
+    print(a,n);
+
+	
+    do
+    {
+		printf("\nEnter 1 for linear search\nEnter 2 for binary search \n");
+
+		scanf("%d",&opt);
+		if(opt==1)
+			{
+				linearsearch(a,no,n);
+			}
+		if(opt==2)
+			{
+				sort(a,n);
+				binarysearch(a,no,n);
+			}
+        printf("Do you want to continue ? 0/1\n");
+        scanf("%d",&op);
+    }while(op==1);
+		
+
+}
+void input(int a[],int n)
+{
+	for(int i=0;i<n;i++)
+	{
+		scanf("%d",&a[i]);
+	}
+}
+void print(int a[],int n)
+{	
+	for(int i=0;i<n;i++)
+	{
+		printf(" %d ",a[i]);
+	}
+	
+}
+void linearsearch(int a[],int no,int n)
+{
+    int flag=0;
+	for(int i=0;i<n;i++)
+	{
+		if(no==a[i])
+        {
+            printf("Found at position %d \n",i+1);
+            flag=1;
+        }
+	}
+    if(flag!=1)printf("Not found \n");
+    
+	
+}
+void sort(int a[],int n)
+{
+	for(int i=0;i<n;i++)
+	{
+		for(int j=0;j<n-i-1;j++)
+		{
+            if(a[j]>a[j+1])
+            {
+                int temp=a[j];
+                a[j]=a[j+1];
+                a[j+1]=temp;
+            }
+		}
+	}
+}
+void binarysearch(int a[],int no,int n)
+{
+	
+    int first = 0;
+    int last = n - 1;
+    
+    while (first <= last)
+    {
+        int middle = (first+last)/2;
+        
+        if (a[middle]==no)
+        {
+            printf("Found at position %d.\n",middle+1);
+            break;
+        }
+        else if (a[middle]<no)
+            first = middle + 1;
+        else if(a[middle]>no)
+            last = middle - 1;
+        
+        
+    }
+}
+/*
+Output:
+Enter number you want to search for : 4
+Enter the number of elements : 4 
+Enter contents of the array : 
+1
+2
+3
+4
+
+The array is :  1  2  3  4 
+Enter 1 for linear search
+Enter 2 for binary search 
+1
+Found at position 4 
+Do you want to continue ? 0/1
+1
+
+Enter 1 for linear search
+Enter 2 for binary search 
+2
+Found at position 4.
+Do you want to continue ? 0/1
+0
+Enter number you want to search for : 4
+Enter the number of elements : 4
+Enter contents of the array : 
+1
+2
+3
+5
+
+The array is :  1  2  3  5 
+Enter 1 for linear search
+Enter 2 for binary search 
+1
+Not found 
+Do you want to continue ? 0/1
+1
+Enter 1 for linear search
+Enter 2 for binary search 
+2
+Not found
+*/

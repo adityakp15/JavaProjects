@@ -1,0 +1,219 @@
+// avltree.h
+typedef struct avlnode* position;
+typedef struct avlnode* avltree;
+#define MAX 50
+struct avlnode
+{
+	char english[MAX],tamil[MAX],hindi[MAX];
+	avltree left;
+	avltree right;
+	int height;
+};
+
+static position singlerotatewithleft(position k2);
+static position singlerotatewithright(position k2);
+static position doublerotatewithleft(position k3);
+static position doublerotatewithright(position k3);
+
+
+int max(int a,int b)
+{
+	if(a>b)
+		return a;
+	else
+		return b;
+}
+
+static int height(position p)
+{
+	if(p==NULL)
+		return -1;
+	else 
+		return p->height;
+}
+
+avltree insert(avltree t, char english[], char tamil[], char hindi[])
+{
+	if(t==NULL)
+	{
+		t=malloc(sizeof(struct avlnode));
+		strcpy(t->english,english);
+		strcpy(t->tamil,tamil);
+		strcpy(t->hindi,hindi);
+		t->height=0;
+		t->left=t->right=NULL;
+	}
+	else if( strcmp(english,t->english)<0)
+	{
+		t->left=insert(t->left,english,tamil,hindi);
+		if(height(t->left)-height(t->right)==2)
+		{
+			if(strcmp(english,t->left->english)<0)
+				t=singlerotatewithleft(t);
+			else
+				t=doublerotatewithleft(t);
+		}
+	}
+	else if(strcmp(english,t->english)>0)
+	{
+		t->right=insert(t->right,english,tamil,hindi);
+		if(height(t->right)-height(t->left)==2)
+		{
+			if(strcmp(english,t->right->english)>0)
+				t=singlerotatewithright(t);
+			else
+				t=doublerotatewithright(t);
+		}
+	}
+	t->height=max(height(t->left),height(t->right)) + 1;
+	return t;
+}
+
+
+static position singlerotatewithleft(position k2)
+{
+	position k1;
+	puts(" |Single right rotation|");
+	k1=k2->left;
+	k2->left=k1->right;
+	k1->right=k2;
+	k2->height=max(height(k2->left),height(k2->right))+1;
+	k1->height=max(height(k1->left),k2-> height)+1;
+	return k1;
+}
+
+static position singlerotatewithright(position k2)
+{
+	position k1;
+	puts(" |Single left rotation|");
+	k1=k2->right;
+	k2->right=k1->left;
+	k1->left=k2;
+	k2->height=max(height(k2->left),height(k2->right))+1;
+	k1->height=max(height(k1->right),k2-> height)+1;
+	return k1;
+}
+
+static position doublerotatewithleft(position k3)
+{
+	k3->left=singlerotatewithright(k3->left);
+	puts(" |Left Right rotation|");
+	return singlerotatewithleft(k3);
+}
+
+static position doublerotatewithright(position k3)
+{
+	k3->right= singlerotatewithleft(k3->right);
+	puts(" |Right Left rotation|");
+	return singlerotatewithright(k3);
+}
+
+
+position find(avltree t,char word[])
+{
+	if(t==NULL)
+		return NULL;
+	else if(strcmp(word,t->english)<0)
+		return find(t->left,word);
+	else if(strcmp(word,t->english)>0)
+		return find(t->right,word);
+	else
+		return t;
+}
+
+void inorder(avltree t)
+{
+	if(t!=NULL)
+	{
+		inorder(t->left);
+		puts(t->english);
+		inorder(t->right);
+	}
+}
+
+void findTamilHindi(avltree t, char s[])
+{
+	position f= find(t,s);
+	FILE *file=fopen("avldict","a");
+
+	if(f!=NULL)
+	{
+		//printf("%s in Tamil : ",s); puts(f->tamil);
+		//printf("%s in Hindi : ",s); puts(f->hindi);
+		fprintf(file,"%s in Tamil : %s\t",s,f->tamil);
+		fprintf(file,"%s in Hindi : %s\n",s,f->hindi);
+	}
+	else
+		printf("%s is not in the dictionary\n",s);
+
+	fclose(file);
+}
+
+//avltree.c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "avltree.h"
+
+int main(int argc, char const *argv[])
+{
+	int i=0;
+	char english[MAX],tamil[MAX],hindi[MAX];
+	avltree t=NULL;
+	position f=NULL;
+	t=insert(t,"Algorithm","வழிமுறை","कलन विधि"); inorder(t); puts("");
+	t=insert(t,"Animation","அனிமேஷன்","एनीमेशन"); inorder(t); puts("");
+	t=insert(t,"Bit","துணுக்கு","बिट"); inorder(t); puts("");
+	t=insert(t,"Browser","உலாவி","ब्राउज़र"); inorder(t); puts("");
+	t=insert(t,"Clipboard","மைற~பலைக","क्लिपबोर्ड"); inorder(t); puts("");
+	t=insert(t,"Compiler","தொகுப்பி","संकलक"); inorder(t); puts("");
+	t=insert(t,"Digital","எண்முறை","डिजिटल"); inorder(t); puts("");
+	t=insert(t,"Printer","அச்சு இயந்திரம்","छापनेवाला यंत्र"); inorder(t); puts("");
+	t=insert(t,"Encoding","குறியீட்டு","संकेतीकरण"); inorder(t); puts("");
+	t=insert(t,"Gateway","நுழைவாயில்","प्रवेश द्वार"); inorder(t); puts("");
+	t=insert(t,"Hardware","வன்பொருள்","हार्डवेयर"); inorder(t); puts("");
+	t=insert(t,"Internet","இணைய","अंतराजाल"); inorder(t); puts("");
+	t=insert(t,"Memory","நினைவக","याद"); inorder(t); puts("");
+	t=insert(t,"Monitor","திரைகளும்","मांनीटर"); inorder(t); puts("");
+	t=insert(t,"Password","கடவுச்சொல்","पारण शब्द"); inorder(t); puts("");
+
+	
+	puts("Output of search operrations is present in file \"avldict\" \n");
+	findTamilHindi(t,"Algorithm");
+	findTamilHindi(t,"Animation");
+	findTamilHindi(t,"Bit");
+	findTamilHindi(t,"Browser");
+	findTamilHindi(t,"Clipboard");
+	findTamilHindi(t,"Compiler");
+	findTamilHindi(t,"Digital");
+	findTamilHindi(t,"Printer");
+	findTamilHindi(t,"Encoding");
+	findTamilHindi(t,"Gateway");
+	findTamilHindi(t,"Hardware");
+	findTamilHindi(t,"Internet");
+	findTamilHindi(t,"Memory");
+	findTamilHindi(t,"Monitor");
+	findTamilHindi(t,"Password");
+	findTamilHindi(t,"WordNotInDict");
+	
+	return 0;
+}
+
+//the output is
+
+Algorithm in Tamil : வழிமுறை		Algorithm in Hindi : कलन विधि
+Animation in Tamil : அனிமேஷன்		Animation in Hindi : एनीमेशन
+Bit in Tamil : துணுக்கு			Bit in Hindi : बिट
+Browser in Tamil : உலாவி		Browser in Hindi : ब्राउज़र
+Clipboard in Tamil : மைற~பலைக		Clipboard in Hindi : क्लिपबोर्ड
+Compiler in Tamil : தொகுப்பி		Compiler in Hindi : संकलक
+Digital in Tamil : எண்முறை		Digital in Hindi : डिजिटल
+Printer in Tamil : அச்சு இயந்திரம்		Printer in Hindi : छापनेवाला यंत्र
+Encoding in Tamil : குறியீட்டு		Encoding in Hindi : संकेतीकरण
+Gateway in Tamil : நுழைவாயில்		Gateway in Hindi : प्रवेश द्वार
+Hardware in Tamil : வன்பொருள்		Hardware in Hindi : हार्डवेयर
+Internet in Tamil : இணைய		Internet in Hindi : अंतराजाल
+Memory in Tamil : நினைவக		Memory in Hindi : याद
+Monitor in Tamil : திரைகளும்		Monitor in Hindi : मांनीटर
+Password in Tamil : கடவுச்சொல்		Password in Hindi : पारण शब्द

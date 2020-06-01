@@ -1,0 +1,353 @@
+/*
+UCS 1312: Data Structures Lab
+Aditya Krishna P
+185001010 || CSE A
+Exercise 7: Expression Tree 
+            ▪ Input : infix expression, Output: expression tree 
+            ▪ Use CharStack ADT to convert the infix expression into postfix expression 
+            ▪ Create TreeStack ADT to push and pop tree nodes (element, left ptr, right ptr) 
+            ▪ Use TreeStack ADT to convert the postfix expression into expression tree 
+            ▪ Display the tree using preorder, inorder and postorder traversals. 
+            ▪ Test for the following expressions 
+a. (2+5) * (3-6) / (7*8)
+b. 7 - (((3+2) * (6+1)) / (5+6)) 
+            ▪ c. ((3+2) * (2+5)) 
+
+*/
+//stack.h
+
+struct _node
+{	char data;
+	struct _node *next;	
+} *top =NULL;
+
+typedef struct _node node;
+
+int isempty()
+{
+	if(top==NULL)
+		return 1;
+	else
+		return 0;}
+
+int isoperator(char x)
+{
+	if ((x=='+' || x=='-' || x=='*' || x=='/' || x=='%'))
+		return 1;
+	else 
+		return 0;}
+void push (char x)
+{	//printf("PUSH\n");
+	node *new = (node *) malloc (sizeof(node));
+	new->data=x;
+	//printf("NEW %c \n", new->data);
+	if(top==NULL)
+		new->next=NULL;
+	else
+		new->next=top;
+	top=new;} 
+
+void pop ()
+{	if(top==NULL)
+		printf("Empty stack\n");
+	else
+	{	node * temp=(node*) malloc(sizeof(node));
+		temp=top;
+		top=temp->next;
+		//printf("Deleted\n");
+		free(temp);	}}
+
+void display ()
+{	printf("STACk\n");
+
+	if(top==NULL)
+		printf("Empty stack\n");
+	
+		node * temp= (node*) malloc(sizeof(node));
+		temp=top;
+		while (temp!= NULL)
+		{	printf("%c \t", temp->data);
+			temp=temp->next; }
+		printf("\n");
+	
+}
+
+int compute (int a, int b, char op)
+{	int ans=0;
+	switch (op)
+	{
+		case '+': ans=(a+b); break;
+		case '-': ans=(a-b); break;
+		case '*': ans=(a*b); break;
+		case '/': ans=(a/b); break;
+		case '%': ans=(a%b); break;
+	}
+	return ans;
+}
+
+int evaluate (char postfix[])
+{	int a,b;
+	for(int i=0; i<strlen(postfix); i++)
+	{
+		if(!isoperator(postfix[i]))
+			push(postfix[i]);
+		else
+		{	a = (int)(top->data)-48;
+			pop();
+			b= (int)(top ->data)-48;
+			pop();
+			push ( compute(b,a,postfix[i]) + 48 );
+			//printf("OP %d %c %d \n", a,postfix[i],b);
+		}		}
+	return ((top->data)-48);
+}
+
+int precedence (char x, char op)
+{	int ind=0;
+	switch (op)
+	{
+		case '%':
+		case '^': ind =1; break;
+
+		case '*':
+		case '/': if(x!='%' && x!='^') ind=1; break;
+
+		case '+':
+		case '-': if(x=='+' || x=='-') ind=1; break;
+	}
+	
+	return ind;}
+
+int conv_postfix (char infix[], char postfix[])
+{	int j=0, ind=1;
+	
+	for (int i=0; i<strlen(infix); i++)
+	{	
+		if(isdigit(infix[i]))
+		{	postfix[j]=infix[i];
+			j++; 		}
+
+		else if (infix[i] == '(')
+			push(infix[i]);
+
+		else if (isoperator (infix[i]))
+		{	char x=infix[i];
+
+			while (top!=NULL && precedence (x, top->data) )
+				{	postfix[j]=top->data;
+					j++;
+					pop();		}
+			push(x);		}
+
+		else if (infix[i] == ')')
+		{	if(top==NULL)
+			{ ind=0; return ind;}
+
+			while (top!=NULL && top->data !='(')
+			{	postfix[j]=top->data;
+				j++;
+				pop();			}
+
+			if(top!=NULL)
+				pop();
+			else 
+				{ ind=0; return ind;}		}	}
+
+	while (top!=NULL)
+	{	if(top->data != '(' || top->data !=')')
+		{
+			postfix[j]=top->data;
+			j++;
+			pop();}
+
+		else
+		{
+			ind=0;
+			return ind;		}	}	
+	postfix[j]='\0';
+
+	return ind;
+}
+
+
+//tree.h
+typedef struct  et
+{
+	char value;
+	struct et *left, *right;
+}et;
+typedef struct treenode
+{
+	et * ptr;
+	struct treenode *next;
+} treenode;
+
+treenode * treetop=NULL;
+
+
+et* newNode (int v)
+{
+	et* temp = (et*)malloc(sizeof(et));
+	temp->left =  temp->right = NULL;
+	temp->value =v;
+	return temp;}
+
+
+et* treepeep ()
+{	return treetop->ptr; }
+void preorder (et * t)
+{
+	if(t!=NULL)
+	{
+		printf("%c ", t->value);
+		preorder(t->left);
+		preorder(t->right);	}}
+
+void inorder (et * t)
+{
+	if(t!=NULL)
+	{	inorder(t->left);
+		printf("%c ", t->value);
+		inorder(t->right);	}
+}
+
+void postorder (et * t)
+{
+	if(t!=NULL)
+	{
+		postorder(t->left);
+		postorder(t->right);
+		printf("%c ", t->value);	}
+}
+
+int treeisempty()
+{
+	if(treetop==NULL)
+		return 1;
+	else
+		return 0;
+}
+void treepush (et * x)
+{	//printf("PUSH\n");
+	treenode *new = (treenode *) malloc (sizeof(node));
+	new->ptr=x;
+	if(treetop==NULL)
+		new->next=NULL;
+	else
+		new->next=treetop;
+	treetop=new;} 
+
+void treepop ()
+{	if(treetop==NULL)
+		printf("Empty stack\n");
+	else
+	{	treenode * temp=(treenode*) malloc(sizeof(node));
+		temp=treetop;
+		treetop=temp->next;
+		//printf("Deleted\n");
+		free(temp);	}}
+
+et * constructTree (char postfix[])
+{
+	et * t, *t1, *t2;
+
+	for(int i=0; i<strlen(postfix); i++)
+	{
+		if (!isoperator(postfix[i]))
+		{
+			t=newNode(postfix[i]);
+			treepush(t);		}
+
+		else
+		{
+			t=newNode(postfix[i]);
+			t1=treepeep();
+			treepop();
+			t2=treepeep();
+			treepop();
+			t->right=t1;
+			t->left=t2;
+			treepush(t);		}	}
+	t=treepeep();
+	treepop();
+	return t;}
+
+//et.c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include "stack.h"
+#include "tree.h"
+#define MAX 50
+
+int main()
+{	int x;
+	char infix[MAX];
+	char postfix[MAX];
+
+	printf("Enter infix expression: \n");
+	scanf("%s", infix);
+
+	x=conv_postfix(infix, postfix);
+	if(x==1)
+	{
+		printf("POSTFIX EXPRESSION:\t%s\n", postfix);
+		printf("\n--Constructing Expression Tree--\n");
+		et * r= constructTree(postfix);
+		printf("Inorder Traversal:  \n");
+		inorder(r);
+		printf("\n");
+		printf("Preorder Traversal:  \n");
+		preorder(r);
+		printf("\n");
+		printf("postorder Traversal:  \n");
+		postorder(r);
+		printf("\n");
+	}
+	else
+		printf("Unbalanced Expression\n");
+	
+	return 0;
+}
+
+/*
+OUTPUT :
+
+Enter infix expression: 
+(2+5)*(3-6)/(7*8)
+POSTFIX EXPRESSION:	25+36-*78*/
+
+--Constructing Expression Tree--
+Inorder Traversal:  
+2 + 5 * 3 - 6 / 7 * 8 
+Preorder Traversal:  
+/ * + 2 5 - 3 6 * 7 8 
+postorder Traversal:  
+2 5 + 3 6 - * 7 8 * / 
+
+Enter infix expression: 
+7-(((3+2)*(6+1))/(5+6))
+POSTFIX EXPRESSION:	732+61+*56+/-
+
+--Constructing Expression Tree--
+Inorder Traversal:  
+7 - 3 + 2 * 6 + 1 / 5 + 6 
+Preorder Traversal:  
+- 7 / * + 3 2 + 6 1 + 5 6 
+postorder Traversal:  
+7 3 2 + 6 1 + * 5 6 + / - 
+
+Enter infix expression: 
+((3+2)*(2+5))
+POSTFIX EXPRESSION:	32+25+*
+
+--Constructing Expression Tree--
+Inorder Traversal:  
+3 + 2 * 2 + 5 
+Preorder Traversal:  
+* + 3 2 + 2 5 
+postorder Traversal:  
+3 2 + 2 5 + * 
+*/
