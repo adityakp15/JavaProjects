@@ -1,3 +1,7 @@
-import tkinter as tk
 
-main_window = tk.Tk()
+from tkinter import *
+root = Tk() 
+root.title('GfG') 
+top = Toplevel() 
+top.title('Python') 
+top.mainloop() 
