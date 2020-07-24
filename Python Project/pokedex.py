@@ -42,6 +42,7 @@ def get_evolution_data(choice):
         print(d["chain"]["species"]["name"])
         print(d["chain"]["evolves_to"][0]["species"]["name"])
         print(d["chain"]["evolves_to"][0]["evolves_to"][0]["species"]["name"])
+        print("Sorry, but thats it :( ")
         break
         
 
