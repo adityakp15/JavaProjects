@@ -42,6 +42,7 @@ def get_evolution_data(choice):
         print(d["chain"]["species"]["name"])
         print(d["chain"]["evolves_to"][0]["species"]["name"])
         print(d["chain"]["evolves_to"][0]["evolves_to"][0]["species"]["name"])
+        break
         
 
 def print_details(data,limit,choice):
@@ -76,9 +77,6 @@ def get_choice():
     elif(choice == 4):
         quit()
     
-    
-    
-
 def main():
     
     get_choice()
