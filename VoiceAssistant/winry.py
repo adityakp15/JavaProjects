@@ -25,7 +25,7 @@ def speech_to_text():
     with mic as source:
         #winry_speaks("What would you like me to do ? ")
         print("Speak....")
-        #r.adjust_for_ambient_noise(source)
+        r.adjust_for_ambient_noise(source)
         audio = r.listen(source,phrase_time_limit=3)
     print("Gotcha ! ")
     #winry_speaks("Okay, thats enough now.")
