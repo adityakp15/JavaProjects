@@ -40,7 +40,7 @@ def speech_to_text():
         return 0
 
 if __name__=="__main__":
-    winry_speaks("What is your name ? ")
+    winry_speaks("Hi my name is Winry, what is yours ? ")
     name = speech_to_text()
     winry_speaks("Hello " + name )
 
